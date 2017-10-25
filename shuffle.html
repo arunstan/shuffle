@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Shuffle</title>
+
+<style>
+	
+	#board div {
+		margin:20px 0;
+	}
+
+	#board div span{
+		display: inline-block;
+		width: 50px;
+		height: 50px;
+		text-align: center;
+	}
+</style>
+
+</head>
+
+<body>
+	<div id="board"></div>
+  <script>
+  	
+  	(function(){
+  		let numbers = [
+  			[1,2,3,4],
+  			[5,6,7,8],
+  			[9,10,11,0],
+  		]
+
+  		let nR = numbers.length-1;
+  		let nC = numbers[0].length-1;
+  		let fR = nR 
+  		let fC = nC
+
+  		function render() {
+  			let mk = ''
+	  		numbers.forEach(n => {
+	  			mk+='<div>'
+	  			n.forEach(v => {
+	  				mk+=`<span>${v}</span>`
+	  			})
+	  			mk+='</div>'
+	  		})
+	  		let status = checkDone() 
+	  		mk+=`<div>${status ? 'CORRECT' : 'INCORRECT'}</div>`
+
+	  		document.getElementById('board').innerHTML = mk
+  		}
+
+  		function checkDone() {
+  			let i,j,k=1
+			for (i=0;i<=nR;i++) {
+				for(j=0;j<=nC;j++,++k) {
+					if(numbers[i][j] && numbers[i][j] !== k) {
+						return false;
+					}
+				}
+			}
+			return true
+  		}
+
+  		function listenInput() {
+  			document.addEventListener('keydown', e => processKey(e.keyCode));
+  		}
+
+  		function checkLimits(dir, d) {
+  			return (dir === 'VERTICAL') ? (fR + d >= 0 && fR + d <= nR) : (fC + d >= 0 && fC + d <= nC)
+  		}
+
+  		function updateBoard(dR,dC) {
+  			numbers[fR][fC] = numbers[fR+dR][fC+dC]
+  			numbers[fR+dR][fC+dC] = 0
+  			fR+=dR 
+  			fC+=dC
+  		}
+
+  		function processKey(k) {
+  			let d
+
+  			switch(k) {
+  				case 38: // UP
+  				case 40: // DOWN
+  					d = k - 39
+  					checkLimits('VERTICAL', d) && updateBoard(d,0)
+  					break;
+  				case 37: // LEFT
+  				case 39: // RIGHT
+  					d = 38 - k 
+  					checkLimits('HORIZONTAL', d) && updateBoard(0,d)
+  				break;
+  			}
+  			render()
+  		}
+
+  		render()
+  		listenInput()
+
+  	})()
+
+
+  </script>
+</body>
+</html>
